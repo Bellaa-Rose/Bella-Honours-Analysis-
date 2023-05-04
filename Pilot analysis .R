@@ -171,26 +171,40 @@ trialdata <- subset(trialdata, !is.na(main_trial.thisN)) # get rid of extraneous
 #split rgb strings
 #x=rgb string
 splitrgb <-function(x){ 
-  variable <- str_replace_all(x, "\\[|\\]", "") #delete brackets
+  variable<-str_replace_all(x, "\\[|\\]", "") #delete brackets
   variable<-strsplit(variable, split = ",") #split string
   variable<-lapply(variable, as.numeric)   #convert to numeric
   variable<-lapply(variable, "+", 1)  #convert rgb scale 
   variable<-lapply(variable, "*", 127.5)
+  #variable<-lapply(variable, function(x) list(x[[1]][1], x[[1]][2], x[[1]][3]))
+  output <- list()
+  for(i in 1:length(variable)){
+    #print(i)
+    #print(variable[i])
+    vec <- variable[[i]]
+    #print(vec)
+    temp <- as.list(c(vec[1],vec[2],vec[3]))
+    #print(temp)
+    output[[i]] <- temp
+  }
+  return(output)
   #return (as.list(unlist(variable)))
-  return(variable)
 }
 
-trialdata$Circle1_colour <- lapply(trialdata[,"Circle1_colour"], splitrgb) #apply function
-trialdata$Circle2_colour <- lapply(trialdata[,"Circle2_colour"], splitrgb)
+
+trialdata$Circle1_colour <- lapply(trialdata[,"Circle1_colour"], splitrgb)[[1]] #apply function
+trialdata$Circle2_colour <- lapply(trialdata[,"Circle2_colour"], splitrgb)[[1]]
 
 
 #make dataframes with rows per r, g, and b
+# needs the data to be in the following format:
+
 circle1_df <- as.data.frame(lapply(trialdata[,"Circle1_colour"], function(x) t(do.call(cbind, x))))
 circle2_df <- as.data.frame(lapply(trialdata[,"Circle2_colour"], function(x) t(do.call(cbind, x))))
 
 #swap rows and columns
-circle1_df <- t(circle1_df)
-circle2_df <- t(circle2_df)
+#circle1_df <- t(circle1_df)
+#circle2_df <- t(circle2_df)
 
 #name columns
 colnames(circle1_df) <- c("r1", "g1", "b1")
