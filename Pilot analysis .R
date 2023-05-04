@@ -73,8 +73,6 @@ n.participants <- function(df){
 }
 n.participants(data)
 
-#te`st`
-
 # catch scores
 get_catchscoredecimal<- function(z){ 
   temp_df <- subset(catchdata,participant==z)
