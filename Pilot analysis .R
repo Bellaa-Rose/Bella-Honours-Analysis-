@@ -103,6 +103,7 @@ catch_perperson$score_decimal <- as.numeric(catch_perperson$score_decimal)
 # remove participants with low scores
 acceptable.catch <- subset(catch_perperson, score_decimal>=0.77)
 
+
 hist(catch_perperson$score_decimal)
 
 
@@ -149,6 +150,23 @@ double.cor <- function(similarity){
 double.cor.summary <- trialdata %>% group_by(participant) %>% summarise(correlation = double.cor(similarity))
 #head(double.cor.summary)
 double.cor.acceptable <- subset(double.cor.summary, correlation >= 0.5)
+
+#subset correlation data
+correlation_data <- data[complete.cases(data$Circle1_colour),]
+first_pass <- correlation_data$similarity[1:99]
+second_pass <- correlation_data$similarity[100:198]
+corr_df <- data_frame(first_pass, second_pass)
+
+#plot correlation data
+cor_coef <- cor(first_pass, second_pass)
+
+corr_df$trial <- 1:nrow(corr_df)
+pass.df <- corr_df %>% gather('pass',value,1:2)
+
+ggplot(pass.df, aes(x = trial, y = value, color = pass)) + 
+  geom_line()
+  #geom_smooth(method = "lm") 
+  #labs(x = "Similarity score, first pass", y = "Similarity score, second pass", title = paste("Correlation =", round(cor_coef, 2)))
 
 # plot the double-pass correlations
 cor.plot <- ggplot(data = double.cor.summary, aes(y = correlation,x=1)) +
